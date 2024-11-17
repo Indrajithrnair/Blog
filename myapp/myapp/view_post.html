@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Posts - BlogSphere</title>
+    <link rel="stylesheet" href="{% static 'view_posts.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1><a href="{% url 'home' %}">BlogSphere</a></h1>
+            </div>
+            <ul class="nav-links">
+                <li>Welcome, {{ user.username }}!</li>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'profile' %}">Profile</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="posts-container">
+            <h2>My Posts</h2>
+            {% for post in posts %}
+            <div class="post">
+                <div class="post-header">
+                    <h3 class="post-title" onclick="togglePost({{ post.id }})">{{ post.title }}</h3>
+                    <div class="post-options">
+                        <div class="dropdown">
+                            <button class="dropbtn"><i class="fas fa-ellipsis-v"></i></button>
+                            <div class="dropdown-content">
+                                <a href="{% url 'edit_post' post.id %}">Edit</a>
+                                <a href="{% url 'delete_post' post.id %}">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="post-content-{{ post.id }}" class="post-content" style="display: none;">
+                    {{ post.content }}
+                    <p class="post-meta">
+                        <small>Category: {{ post.category }}</small>
+                    </p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-posts">No posts available. <a href="{% url 'create_post' %}">Create your first post!</a></p>
+            {% endfor %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 BlogSphere. All rights reserved.</p>
+    </footer>
+
+    <script>
+        function togglePost(postId) {
+            const content = document.getElementById(`post-content-${postId}`);
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+            } else {
+                content.style.display = 'none';
+            }
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.style.display === "block") {
+                        openDropdown.style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

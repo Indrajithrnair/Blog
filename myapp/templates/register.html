@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - YourWebsite</title>
+    <link rel="stylesheet" href="{% static 'register.css' %}"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>BlogSphere</h1> <!-- Replace with your website name -->
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}  <!-- Rendered without a placeholder -->
+                {{ form.username.errors }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {{ form.email }}  <!-- Rendered without a placeholder -->
+                {{ form.email.errors }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+                {{ form.password1 }}  <!-- Rendered without a placeholder -->
+                {{ form.password1.errors }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                {{ form.password2 }}  <!-- Rendered without a placeholder -->
+                {{ form.password2.errors }}
+            </div>
+            <button type="submit">Sign Up</button>
+        </form>
+        <div class="link">
+            <a href="{% url 'login' %}" class="AlreadyUser ">Already a user? Login</a>
+        </div>
+    </div>
+</body>
+</html>

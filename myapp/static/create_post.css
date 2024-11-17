@@ -1,0 +1,83 @@
+/* Reset and common styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+:root {
+    --primary-color: #4a90e2; /* Light Blue */
+    --secondary-color: #333; /* Dark Gray */
+    --accent-color: #ff6347; /* Tomato */
+    --background-color: #f5f5f5; /* Light Gray */
+    --text-color: #333;
+    --white-color: #ffffff;
+}
+
+/* Body styling */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Create Post Container */
+.create-post-container {
+    max-width: 600px; /* Max width for the container */
+    margin: 50px auto; /* Centering the container */
+    padding: 20px;
+    background-color: var(--white-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left; /* Align text to the left */
+}
+
+/* Headings */
+.create-post-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+/* Form styles */
+.create-post-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.create-post-container form label {
+    margin-bottom: 5px; /* Space between label and input */
+}
+
+.create-post-container form input,
+.create-post-container form textarea {
+    padding: 10px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    margin-bottom: 15px; /* Space between inputs */
+    width: 100%; /* Full width */
+}
+
+.create-post-container form button {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.create-post-container form button:hover {
+    background-color: #357ab8; /* Darker shade on hover */
+}
+
+/* Footer styling */
+footer {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+}

@@ -1,0 +1,80 @@
+/* Reset and colors */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Root Variables */
+:root {
+    --primary-color: #4a90e2; /* Light Blue */
+    --secondary-color: #333; /* Dark Gray */
+    --accent-color: #ff6347; /* Tomato */
+    --background-color: #f5f5f5; /* Light Gray */
+    --text-color: #333;
+    --white-color: #ffffff;
+}
+
+/* Ensure the page takes up the full height */
+html, body {
+    height: 100%;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Flex container for the whole page */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header and Navbar styling */
+header {
+    background-color: var(--primary-color);
+    padding: 20px;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.nav-links li {
+    margin: 0 15px;
+}
+
+.nav-links a {
+    color: var(--white-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--accent-color);
+}
+
+/* Main content should take up remaining space */
+.content {
+    flex: 1;  /* This makes the content area grow to fill space */
+    padding: 20px;
+}
+
+/* Footer styling */
+footer {
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+}

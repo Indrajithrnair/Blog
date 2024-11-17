@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'base.css' %}">
+<link rel="stylesheet" href="{% static 'liked_posts.css' %}">
+
+    <h2>Liked Posts</h2>
+    <ul>
+        {% for post in liked_posts %}
+            <li>
+                <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                <p>{{ post.content|truncatewords:20 }}</p>
+            </li>
+        {% empty %}
+            <p>You haven't liked any posts yet!</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

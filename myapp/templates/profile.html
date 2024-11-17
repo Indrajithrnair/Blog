@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - BlogSphere</title>
+    <link rel="stylesheet" href="{% static 'profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1><a href="{% url 'home' %}">BlogSphere</a></h1>
+            </div>
+            <ul class="nav-links">
+                {% if user.is_authenticated %}
+                    <li>Welcome, {{ user.username }}!</li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="profile-container">
+            <div class="profile-info">
+                <h2>Your Profile</h2>
+                <div class="profile-details">
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Join Date:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+                </div>
+
+                <div class="profile-actions">
+                    <a href="{% url 'view_posts' %}" class="btn">View Posts</a>
+                    <a href="{% url 'edit_profile' %}" class="btn">Edit Profile</a>
+                    <a href="{% url 'change_password' %}" class="btn">Change Password</a>
+                    <a href="{% url 'liked_posts' %}" class="btn">Liked Posts</a>
+                    <a href="{% url 'commented_posts' %}" class="btn">Commented Posts</a>
+                </div>
+                
+
+                <div class="profile-navigation">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'home' %}" class="btn">Back to home</a>
+                    {% else %}
+                        <a href="{% url 'home' %}" class="btn">Back to Homepage</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2024 BlogSphere. All rights reserved.</p>
+    </footer>
+</body>
+</html>

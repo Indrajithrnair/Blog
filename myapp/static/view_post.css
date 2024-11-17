@@ -1,0 +1,109 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f9fc;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Post Card Styles */
+.post-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-header h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+}
+
+.actions .btn {
+    padding: 8px 12px;
+    margin-left: 10px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.edit-btn {
+    background-color: #4a90e2;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+}
+
+.post-content {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-top: 10px;
+}
+
+.post-footer {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 15px;
+    text-align: right;
+}
+
+/* Clickable Card Styles */
+.post-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.post-card:hover .post-header h3 {
+    color: #4a90e2;
+}
+
+/* Prevent Inner Links from Overriding Card Click */
+.actions a {
+    position: relative;
+    z-index: 2;
+    text-decoration: none;
+}
+
+.actions a:hover {
+    color: #357ab7;
+}
+
+/* No Posts Message */
+.no-posts-message {
+    text-align: center;
+    padding: 20px;
+    background-color: #eef3fa;
+    border-radius: 8px;
+    color: #333;
+}
+
+.no-posts-message a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.no-posts-message a:hover {
+    text-decoration: underline;
+}

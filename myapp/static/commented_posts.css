@@ -1,0 +1,35 @@
+/* Buttons for Edit and Delete */
+.comment-section {
+    margin-top: 10px;
+}
+
+.comment-section .btn {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+/* Edit Button */
+.comment-section .edit-btn {
+    background-color: #007bff; /* Blue */
+}
+
+.comment-section .edit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Delete Button */
+.comment-section .delete-btn {
+    background-color: #dc3545; /* Red */
+}
+
+.comment-section .delete-btn:hover {
+    background-color: #c82333;
+}

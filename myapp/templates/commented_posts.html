@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'base.css' %}">
+<link rel="stylesheet" href="{% static 'commented_posts.css' %}">
+    <h2>Commented Posts</h2>
+    <ul>
+        {% for post in commented_posts %}
+            <li>
+                <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+                <p>{{ post.content|truncatewords:20 }}</p>
+
+                <!-- User's Comment -->
+                <div class="comment-section">
+                    <p>Your comment: {{ post.user_comment }}</p>
+                    <a href="{% url 'edit_comment' post.id %}" class="btn edit-btn">Edit</a>
+                    <a href="{% url 'delete_comment' post.id %}" class="btn delete-btn">Delete</a>
+                </div>
+            </li>
+        {% empty %}
+            <p>You haven't commented on any posts yet!</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.title }} - BlogSphere</title>
+    <link rel="stylesheet" href="{% static 'post_detail.css' %}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1><a href="{% url 'home' %}">BlogSphere</a></h1>
+            </div>
+            <ul class="nav-links">
+                {% if user.is_authenticated %}
+                    <li>Welcome, {{ user.username }}!</li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="post-detail-container">
+            <h2>{{ post.title }}</h2>
+            <p class="post-content">{{ post.content }}</p>
+            <p class="post-meta"><strong>Author:</strong> {{ post.author.username }}</p>
+            <p class="post-meta"><strong>Created on:</strong> {{ post.created_at }}</p>
+
+            {% if user == post.author %}
+                <div class="post-actions">
+                    <a href="{% url 'edit_post' post.id %}" class="btn">Edit</a>
+                    <a href="{% url 'delete_post' post.id %}" class="btn btn-danger">Delete</a>
+                </div>
+                <br>
+            {% endif %}
+            <a href="{% url 'profile' %}" class="btn">Back to Profile</a>
+        </div>
+
+        <!-- Like Section -->
+        <div class="like-section">
+            <form id="like-form" action="{% url 'like_post' post.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" id="like-btn" class="btn like-btn">
+                    {% if is_liked %}
+                        <i class="fas fa-thumbs-down"></i> Unlike
+                    {% else %}
+                        <i class="fas fa-thumbs-up"></i> Like
+                    {% endif %}
+                </button>
+            </form>
+            <p id="like-count">{{ like_count }} likes</p>
+        </div>
+
+        <!-- Comment Section -->
+        <div class="comments-section">
+            <h3>Comments</h3>
+            {% if comments %}
+                <ul class="comment-list">
+                    {% for comment in comments %}
+                        <li class="comment-item">
+                            <p><strong>{{ comment.user.username }}</strong>: {{ comment.content }}</p>
+                            <small>Commented on {{ comment.commented_at }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="no-comments">No comments yet. Be the first to comment!</p>
+            {% endif %}
+        </div>
+
+        <!-- Add Comment Form -->
+        <form id="comment-form" action="{% url 'add_comment' post.id %}" method="post">
+            {% csrf_token %}
+            <textarea name="content" id="comment-content" rows="3" placeholder="Add a comment..." required></textarea>
+            <button type="submit" class="btn">Post Comment</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 BlogSphere. All rights reserved.</p>
+    </footer>
+</body>
+</html>
