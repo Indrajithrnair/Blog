@@ -279,11 +279,27 @@ def liked_posts(request):
     liked_posts = Post.objects.filter(likes__user=request.user)
     return render(request, 'liked_posts.html', {'liked_posts': liked_posts})
 
+from django.db import models
 @login_required
 def commented_posts(request):
     # Fetch posts that the logged-in user has commented on
-    commented_posts = Post.objects.filter(comments__user=request.user).distinct()
-    return render(request, 'commented_posts.html', {'commented_posts': commented_posts})
+    commented_posts = (
+        Post.objects.filter(comments__user=request.user)
+        .annotate(user_comment=models.F('comments__content'))
+        .distinct()
+    )
+    
+    # Fetch only the user's specific comments for the posts
+    user_comments = {
+        post.id: post.comments.filter(user=request.user).first()
+        for post in commented_posts
+    }
+
+    return render(
+        request,
+        'commented_posts.html',
+        {'commented_posts': commented_posts, 'user_comments': user_comments},
+    )
 
 def edit_comment(request, id):
     comment = get_object_or_404(Comment, id=id)  # Fetch comment or return 404 if not found
@@ -299,9 +315,10 @@ def edit_comment(request, id):
     return render(request, 'edit_comment.html', {'form': form, 'comment': comment})
 
 
-def delete_comment(request, post_id):
-    comment = get_object_or_404(Comment, post_id=post_id, user=request.user)
-    if request.method == "POST":
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if comment.user == request.user:  # Ensure the logged-in user owns the comment
         comment.delete()
-        return redirect('profile:commented_posts')
-    return render(request, 'confirm_delete.html', {'comment': comment})
+        return redirect('post_detail', post_id=comment.post.id)  # Adjust based on your structure
+    return redirect('home')  # Redirect to home if unauthorized
