@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'admin_dashboard.css' %}">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <header class="dashboard-header">
+            <h1>Admin Dashboard</h1>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </header>
+        <main>
+            <div class="dashboard-options">
+                <div class="dashboard-option" style="--i:1">
+                    <a href="{% url 'manage_users' %}">Manage Users</a>
+                </div>
+                <div class="dashboard-option" style="--i:2">
+                    <a href="{% url 'manage_posts' %}">Manage Posts</a>
+                </div>
+                <!-- You can add more dashboard options here -->
+            </div>
+        </main>
+    </div>
+</body>
+</html>

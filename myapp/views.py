@@ -17,6 +17,7 @@ from django.http import JsonResponse
 from django.db.models import Count
 from .forms import CommentForm
 from .models import Comment
+from django.db.models import Q
 
 
 def home(request):
@@ -43,11 +44,89 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            return redirect('home')
+            if user.is_superuser:  # Check if the user is an admin
+                return redirect('admin_dashboard')  # Redirect admin users to the admin dashboard
+            return redirect('home')  # Redirect regular users to the homepage
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'login.html')
 
+@login_required
+def admin_dashboard(request):
+    return render(request, 'admin_dashboard.html')
+
+@login_required
+def manage_users(request):
+    users = User.objects.all()
+    return render(request, 'manage_users.html', {'users': users})
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.delete()
+    return redirect('manage_users')
+
+@login_required
+def manage_posts(request):
+    posts = Post.objects.all()
+    comments = Comment.objects.all()
+    return render(request, 'manage_posts.html', {'posts': posts, 'comments': comments})
+
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    comment.delete()
+    return redirect('manage_posts')
+
+def is_admin(user):
+    return user.is_staff or user.is_superuser
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Post
+
+@login_required
+def remove_post(request, post_id):
+    print(f"remove_post called with post_id: {post_id}")  # Debugging log
+
+    try:
+        # Get the post or raise 404
+        post = get_object_or_404(Post, id=post_id)
+        print(f"Post found: {post.title} by {post.author.username}")  # Debugging log
+
+        # Check if the user is authorized to delete
+        if request.user == post.author or request.user.is_staff:
+            print(f"User {request.user.username} authorized to delete.")  # Debugging log
+            post.delete()
+            messages.success(request, "Post deleted successfully.")
+            return redirect('manage_posts')  # Replace with your desired redirect URL
+        else:
+            print(f"User {request.user.username} is not authorized to delete this post.")  # Debugging log
+            messages.error(request, "You do not have permission to delete this post.")
+            return redirect('manage_posts')
+    except Exception as e:
+        print(f"An error occurred: {e}")  # Debugging log for any exceptions
+        messages.error(request, "Something went wrong.")
+        return redirect('manage_posts')
+
+# def admin_delete_post(request, post_id):
+#     # Check if the user is an admin
+#     if not request.user.is_staff:
+#         return redirect('permission_denied')  # Ensure you have this view/URL
+
+#     # Get the post or return a 404 if it doesn't exist
+#     post = get_object_or_404(Post, id=post_id)
+
+#     # Ensure this is a POST request for deletion
+#     if request.method == 'POST':
+#         post.delete()
+#         return redirect('manage_posts')
+    
+#     # If not a POST request, show an error
+#     messages.error(request, "Invalid deletion request.")
+#     return redirect('manage_posts')
+        
 def signup_view(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -72,7 +151,7 @@ def create_post(request):
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            return redirect('profile')
+            return redirect('home')
     else:
         form = PostForm()
     return render(request, 'create_post.html', {'form': form})
@@ -87,21 +166,25 @@ def edit_profile(request):
         form = EditProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your profile has been updated successfully.')
             return redirect('profile')
     else:
         form = EditProfileForm(instance=request.user)
     return render(request, 'edit_profile.html', {'form': form})
+
+from django.contrib.auth import logout
+
+from django.contrib.auth import logout
+from django.contrib import messages
 
 @login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('profile')
+            form.save()  # Save the new password
+            messages.success(request, 'Password successfully changed. Please log in again.')
+            logout(request)  # Log the user out
+            return redirect('home')  # Redirect to the homepage
         else:
             messages.error(request, 'Please correct the error below.')
     else:
@@ -144,15 +227,7 @@ def edit_post(request, post_id):
     else:
         form = PostForm(instance=post)
     return render(request, 'edit_post.html', {'form': form, 'post': post})
-
-@login_required
-def delete_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id, author=request.user)
-    if request.method == 'POST':
-        post.delete()
-        return redirect('profile')
-    return render(request, 'delete_post.html', {'post': post})
-
+    
 @login_required
 def view_posts(request):
     posts = Post.objects.filter(author=request.user)
@@ -259,19 +334,21 @@ def like_post(request, post_id):
     
     return redirect('post_detail', post_id=post.id)
 
+@login_required
 def add_comment(request, post_id):
-    post = get_object_or_404(Post, id=post_id)  # Get the post the comment is related to
-    if request.method == 'POST':
-        form = CommentForm(request.POST)  # Bind the form with POST data
-        if form.is_valid():  # Validate the form
-            comment = form.save(commit=False)  # Don't save yet
-            comment.post = post  # Associate the comment with the post
-            comment.user = request.user  # Associate the comment with the logged-in user
-            comment.save()  # Save the comment to the database
-            return redirect('post_detail', post_id=post.id)  # Redirect to the post detail page after saving
-    else:
-        form = CommentForm()  # Initialize an empty form
-    return render(request, 'add_comment.html', {'form': form, 'post': post})
+    # Get the post the comment is related to
+    post = get_object_or_404(Post, id=post_id)
+
+    if request.method == "POST":
+        content = request.POST.get("content")
+        if content:
+            # Create a new comment and associate it with the logged-in user and the post
+            Comment.objects.create(user=request.user, post=post, content=content)
+        else:
+            messages.error(request, "Comment content cannot be empty.")
+
+    return redirect("post_detail", post_id=post.id)
+    
 
 @login_required
 def liked_posts(request):
@@ -301,24 +378,57 @@ def commented_posts(request):
         {'commented_posts': commented_posts, 'user_comments': user_comments},
     )
 
-def edit_comment(request, id):
-    comment = get_object_or_404(Comment, id=id)  # Fetch comment or return 404 if not found
+def edit_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    # Ensure only the user who created the comment can edit it
+    if request.user != comment.user:
+        return redirect('post_detail', post_id=comment.post.id)
     
     if request.method == 'POST':
         form = CommentForm(request.POST, instance=comment)
         if form.is_valid():
             form.save()
-            return redirect('profile')  # Redirect after successful edit
+            return redirect('post_detail', post_id=comment.post.id)
     else:
         form = CommentForm(instance=comment)
     
-    return render(request, 'edit_comment.html', {'form': form, 'comment': comment})
+    return render(request, 'edit_comment.html', {'form': form})
 
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    
+    if request.method == 'POST':
+        if request.user == post.author:  # Ensure that only the post author can delete it
+            post.delete()
+            return redirect('home')  # Redirect to user's profile after deletion
+        else:
+            messages.error(request, 'You are not authorized to delete this post.')
+            return redirect('post_detail', post_id=post.id)
+    
+    return redirect('home')
 
 @login_required
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
-    if comment.user == request.user:  # Ensure the logged-in user owns the comment
+    
+    # Check if the user is an admin or the comment's author
+    if request.user.is_staff or request.user == comment.user:
         comment.delete()
-        return redirect('post_detail', post_id=comment.post.id)  # Adjust based on your structure
-    return redirect('home')  # Redirect to home if unauthorized
+        # If admin, redirect to manage posts
+        if request.user.is_staff:
+            return redirect('manage_posts')
+        # If regular user, redirect to the post detail
+        else:
+            return redirect('post_detail', post_id=comment.post.id)
+    else:
+        # If user is not authorized
+        messages.error(request, "You are not authorized to delete this comment.")
+        return redirect('post_detail', post_id=comment.post.id)
+
+def search_blogs(request):
+    query = request.GET.get('query', '')
+    results = Post.objects.filter(
+        Q(title__icontains=query) | Q(content__icontains=query)
+    )
+    return render(request, 'search_results.html', {'query': query, 'results': results})

@@ -16,9 +16,9 @@
             </div>
             <ul class="nav-links">
                 <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="#">About</a></li>
+                <!-- <li><a href="#">About</a></li>
                 <li><a href="#">Categories</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="#">Contact</a></li> -->
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'profile' %}">My Account</a></li>
                     <li><a href="{% url 'logout' %}">Logout</a></li>
@@ -36,14 +36,20 @@
             {% if user.is_authenticated %}
                 <h2>Welcome back, {{ user.username }}!</h2>
                 <p>Discover amazing blogs on various topics and share your own stories with the world.</p>
-                <a href="#blogs" class="cta-btn">Explore Blogs</a>
             {% else %}
                 <h2 class="vanakam">Welcome to BlogSphere!</h2>
                 <p class="kerivaa">Please log in to access your account and share your thoughts.</p>
-                <a href="#blogs" class="cta-btn">Explore Blogs</a>
             {% endif %}
+            <!-- Search Bar -->
+            <form method="get" action="{% url 'search_blogs' %}" class="search-bar">
+                <input type="text" name="query" placeholder="Search blogs..." required>
+                <button type="submit">Search</button>
+            </form>
+            <br>
+            <a href="#blogs" class="cta-btn">Explore Blogs</a>
         </div>
     </section>
+
 
     <!-- Blog Post Previews -->
 <section id="blogs" class="blog-previews">

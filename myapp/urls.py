@@ -7,7 +7,16 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('signup/', views.signup_view, name='signup'),
     path('logout/', views.logout_view, name='logout'),
-    
+    path('search/', views.search_blogs, name='search_blogs'),
+
+    # Admin
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('manage-users/', views.manage_users, name='manage_users'),
+    path('manage-posts/', views.manage_posts, name='manage_posts'),
+    path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('delete-comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
+    # path('post/<int:post_id>/delete/', views.admin_delete_post, name='admin_delete_post'),
+   path('post/<int:post_id>/delete/', views.remove_post, name='remove_post'),
     # Profile related
     path('profile/', views.profile_view, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
@@ -26,7 +35,7 @@ urlpatterns = [
     path('post/<int:post_id>/delete/', views.delete_post, name='delete_post'),
     path('post/<int:post_id>/like/', views.like_post, name='like_post'),
     path('post/<int:post_id>/comment/', views.add_comment, name='add_comment'),
-    path('edit-comment/<int:id>/', views.edit_comment, name='edit_comment'),
-    path('delete-comment/<int:comment_id>/', views.delete_comment, name='delete_comment')  # Correct: comment_id
-
+    path('edit-comment/<int:comment_id>/', views.edit_comment, name='edit_comment'),
+    path('delete-comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),  # Correct: comment_id
+    path('post/<int:post_id>/user-delete/', views.delete_post, name='delete_post'),
 ]

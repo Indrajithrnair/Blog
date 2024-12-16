@@ -47,6 +47,74 @@
         .dropdown-menu.show {
             display: block;
         }
+        .comment-form {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .comment-form h4 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .comment-form button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .comment-form button:hover {
+            background-color: #2980b9;
+        }
+        
+        .comment-form button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .dropdown-menu {
+            display: none; /* Hide the menu by default */
+            position: absolute;
+            background-color: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            z-index: 1;
+            margin-top: 5px;
+            padding: 10px;
+            width: 150px;
+        }
+        
+        .dropdown-menu.show {
+            display: block; /* Show the dropdown when .show class is added */
+        }
+        
+        
     </style>
 </head>
 <body>
@@ -68,7 +136,7 @@
             </ul>
         </nav>
     </header>
-    
+
     <main>
         <div class="post-detail-container">
             <h2>{{ post.title }}</h2>
@@ -79,11 +147,16 @@
             {% if user == post.author %}
                 <div class="post-actions">
                     <a href="{% url 'edit_post' post.id %}" class="btn">Edit</a>
-                    <a href="{% url 'delete_post' post.id %}" class="btn btn-danger">Delete</a>
+
+                    <!-- Add the delete form with confirmation -->
+                    <form action="{% url 'delete_post' post.id %}" method="post" style="display: inline;" onsubmit="return confirmDelete()">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </div>
                 <br>
             {% endif %}
-            <a href="{% url 'profile' %}" class="btn">Back to Profile</a>
+            <a href="{% url 'home' %}" class="btn">Back to Home</a>
         </div>
 
         <!-- Like Section -->
@@ -110,12 +183,12 @@
                         <li class="comment-item">
                             <div class="comment-header">
                                 <p><strong>{{ comment.user.username }}</strong>:</p>
-                                
+
                                 <!-- Display three dots menu only for the logged-in user's comments -->
                                 {% if user == comment.user %}
                                 <div class="dropdown">
                                     <button class="three-dot-btn">⋮</button>
-                                    <div class="dropdown-content">
+                                    <div class="dropdown-menu">
                                         <a href="{% url 'edit_comment' comment.id %}">Edit</a>
                                         <a href="{% url 'delete_comment' comment.id %}" onclick="return confirmDelete()">Delete</a>
                                     </div>
@@ -131,49 +204,64 @@
                 <p class="no-comments">No comments yet. Be the first to comment!</p>
             {% endif %}
         </div>
-        <!-- Add Comment Form -->
-        <form id="comment-form" action="{% url 'add_comment' post.id %}" method="post">
-            {% csrf_token %}
-            <textarea name="content" id="comment-content" rows="3" placeholder="Add a comment..." required></textarea>
-            <button type="submit" class="btn">Post Comment</button>
-        </form>
+
+        <!-- Comment Form -->
+        {% if user.is_authenticated %}
+        <div class="comment-form">
+            <h4>Add a Comment</h4>
+            <form action="{% url 'add_comment' post.id %}" method="post">
+                {% csrf_token %}
+                <textarea name="content" rows="3" required placeholder="Write your comment here..."></textarea>
+                <button type="submit" class="btn">Submit Comment</button>
+            </form>
+        </div>
+        {% endif %}
     </main>
 
     <footer>
         <p>&copy; 2024 BlogSphere. All rights reserved.</p>
     </footer>
+
     <script>
         function confirmDelete() {
-            return confirm("Are you sure you want to delete this comment?");
+            const confirmation = confirm("Are you sure you want to delete this post?");
+            return confirmation;
         }
-        
+    
         document.addEventListener('DOMContentLoaded', () => {
             const dropdownButtons = document.querySelectorAll('.three-dot-btn');
     
+            // Check if buttons are selected
+            if (dropdownButtons.length === 0) {
+                console.log("No dropdown buttons found");
+            }
+    
             dropdownButtons.forEach((button) => {
                 button.addEventListener('click', (e) => {
-                    // Toggle the dropdown content visibility
                     const dropdown = button.closest('.dropdown');
-                    dropdown.classList.toggle('show');
+                    const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+                    dropdownMenu.classList.toggle('show');
     
-                    // Close other dropdowns if open
+                    // Close other dropdowns when one is opened
                     document.querySelectorAll('.dropdown').forEach((otherDropdown) => {
                         if (otherDropdown !== dropdown) {
-                            otherDropdown.classList.remove('show');
+                            otherDropdown.querySelector('.dropdown-menu').classList.remove('show');
                         }
                     });
+    
+                    // Prevent event from bubbling to the document and closing the dropdown
+                    e.stopPropagation();
                 });
             });
     
-            // Close the dropdown if clicked outside
+            // Close dropdown if clicking outside of it
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.dropdown')) {
-                    document.querySelectorAll('.dropdown').forEach((dropdown) => {
-                        dropdown.classList.remove('show');
+                    document.querySelectorAll('.dropdown-menu').forEach((dropdownMenu) => {
+                        dropdownMenu.classList.remove('show');
                     });
                 }
             });
         });
-    </script>    
-</body>
-</html>
+    </script>
+    

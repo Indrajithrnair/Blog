@@ -28,6 +28,8 @@ class SignupForm(UserCreationForm):
             raise forms.ValidationError("Username must be at least 3 characters long.")
         if not re.match("^[A-Za-z0-9]*$", username):
             raise forms.ValidationError("Username can only contain letters and numbers.")
+        if username.isdigit():
+            raise forms.ValidationError("Username cannot be entirely numeric.")
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("Username is already in use.")
         return username
